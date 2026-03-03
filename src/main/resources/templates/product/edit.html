@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head><title>Edit Product</title></head>
+<body>
+<div layout:fragment="content">
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="card-header text-white py-3 px-4"
+                     style="background:#1a1a2e; border-bottom: 3px solid #f59e0b;">
+                    <h5 class="mb-0 fw-bold">✏️ Edit Product</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <form th:action="@{/products/edit}"
+                          th:object="${product}"
+                          method="post"
+                          enctype="multipart/form-data"
+                          novalidate>
+
+                        <!-- Hidden ID -->
+                        <input type="hidden" th:field="*{id}"/>
+
+                        <!-- NAME -->
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text"
+                                   th:field="*{name}"
+                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                                   class="form-control"
+                                   placeholder="Product name">
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('name')}"
+                                 th:errors="*{name}">
+                            </div>
+                        </div>
+
+                        <!-- PRICE -->
+                        <div class="mb-3">
+                            <label class="form-label">Price</label>
+                            <input type="number"
+                                   th:field="*{price}"
+                                   th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'"
+                                   class="form-control"
+                                   placeholder="0">
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('price')}"
+                                 th:errors="*{price}">
+                            </div>
+                        </div>
+
+                        <!-- CURRENT IMAGE PREVIEW -->
+                        <div class="mb-3" th:if="${product.image != null and !#strings.isEmpty(product.image)}">
+                            <label class="form-label">Current Image</label><br>
+                            <img th:src="@{/images/} + ${product.image}"
+                                 width="120" height="90"
+                                 class="rounded-3 border object-fit-cover"
+                                 style="object-fit:cover;"
+                                 alt="Current image">
+                        </div>
+
+                        <!-- UPLOAD NEW IMAGE -->
+                        <div class="mb-3">
+                            <label class="form-label">Change Image</label>
+                            <input type="file"
+                                   name="imageProduct"
+                                   class="form-control"
+                                   accept="image/png, image/jpeg">
+                            <div class="form-text">Leave empty to keep current image.</div>
+                        </div>
+
+                        <!-- CATEGORY -->
+                        <div class="mb-4">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" th:field="*{category.id}">
+                                <option th:each="cat : ${categories}"
+                                        th:value="${cat.id}"
+                                        th:text="${cat.name}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-warning fw-semibold flex-fill text-dark">
+                                💾 Update Product
+                            </button>
+                            <a th:href="@{/products}" class="btn btn-outline-secondary fw-semibold">
+                                Cancel
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

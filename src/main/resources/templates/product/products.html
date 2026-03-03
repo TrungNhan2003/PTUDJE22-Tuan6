@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<body>
+<div layout:fragment="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">📦 Product List</h4>
+        <a th:href="@{/products/create}" class="btn btn-sm btn-danger fw-semibold px-3">
+            + Create New Product
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+        <table class="table table-hover text-center align-middle mb-0">
+            <thead style="background:#1a1a2e; color:#fff;">
+            <tr>
+                <th class="py-3">#</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>Category</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Empty state -->
+            <tr th:if="${#lists.isEmpty(listproduct)}">
+                <td colspan="6" class="py-5 text-muted">
+                    <div style="font-size:2.5rem;">📭</div>
+                    <p class="mt-2 mb-0">No products found.</p>
+                </td>
+            </tr>
+            <!-- Product rows -->
+            <tr th:each="p, stat : ${listproduct}">
+                <td class="text-muted fw-bold" th:text="${stat.index + 1}"></td>
+                <td class="fw-semibold text-start" th:text="${p.name}"></td>
+                <td>
+                    <span class="badge rounded-pill text-bg-success fs-6"
+                          th:text="'$' + ${p.price}">
+                    </span>
+                </td>
+                <td>
+                    <img th:src="@{'/images/' + ${p.image}}"
+                         width="70" height="55"
+                         class="rounded-2 object-fit-cover border"
+                         style="object-fit:cover;"
+                         alt="product image">
+                </td>
+                <td>
+                    <span class="badge text-bg-secondary rounded-pill"
+                          th:text="${p.category.name}">
+                    </span>
+                </td>
+                <td>
+                    <a th:href="@{'/products/edit/' + ${p.id}}"
+                       class="btn btn-warning btn-sm fw-semibold me-1">Edit</a>
+                    <a th:href="@{'/products/delete/' + ${p.id}}"
+                       class="btn btn-danger btn-sm fw-semibold"
+                       onclick="return confirm('Delete this product?')">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
