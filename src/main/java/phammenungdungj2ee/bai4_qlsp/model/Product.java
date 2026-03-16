@@ -1,29 +1,26 @@
 package phammenungdungj2ee.bai4_qlsp.model;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Max;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
+@Entity
+@Table(name = "table_product")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
     private String name;
 
-    @Length(min = 0, max = 200, message = "Tên hình ảnh không quá 200 kí tự")
+    @Length(max = 200, message = "Tên hình ảnh không quá 200 kí tự")
     private String image;
 
     @NotNull(message = "Giá sản phẩm không được để trống")
@@ -31,5 +28,7 @@ public class Product {
     @Max(value = 9999999, message = "Giá sản phẩm không được lớn hơn 9999999")
     private long price;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
 }

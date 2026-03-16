@@ -1,29 +1,23 @@
 package phammenungdungj2ee.bai4_qlsp.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import phammenungdungj2ee.bai4_qlsp.model.Category;
+import phammenungdungj2ee.bai4_qlsp.repository.CategoryRepository;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 public class CategoryService {
 
-    List<Category> listCategory = new ArrayList<>();
-
-    public CategoryService() {
-        listCategory.add(new Category(1, "Điện thoại"));
-        listCategory.add(new Category(2, "Laptop"));
-        listCategory.add(new Category(3, "Phụ kiện"));
-    }
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     public List<Category> getAll() {
-        return listCategory;
+        return categoryRepository.findAll();
     }
 
-    public Category get(int id) {
-        return listCategory.stream()
-                .filter(c -> c.getId() == id)
-                .findFirst()
-                .orElse(null);
+    public Category get(Long id) {
+        return categoryRepository.findById(id).orElse(null);
     }
 }

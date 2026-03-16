@@ -43,7 +43,7 @@ public class ProductController {
     public String create(
             @Valid @ModelAttribute("product") Product newProduct,
             BindingResult result,
-            @RequestParam("categoryId") int categoryId,
+            @RequestParam("categoryId") Long categoryId,
             @RequestParam("imageProduct") MultipartFile imageProduct,
             Model model) {
 
@@ -68,7 +68,7 @@ public class ProductController {
 
     // ===================== EDIT =====================
     @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable int id, Model model) {
+    public String editForm(@PathVariable Long id, Model model) {
 
         Product product = productService.get(id);
 
@@ -86,7 +86,7 @@ public class ProductController {
     public String edit(
             @Valid @ModelAttribute("product") Product editProduct,
             BindingResult result,
-            @RequestParam("categoryId") int categoryId,
+            @RequestParam("categoryId") Long categoryId,
             @RequestParam("imageProduct") MultipartFile imageProduct,
             Model model) {
 
