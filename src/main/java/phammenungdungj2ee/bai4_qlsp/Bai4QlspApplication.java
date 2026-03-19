@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Bai4QlspApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Bai4QlspApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(Bai4QlspApplication.class, args);
+    }
 }
