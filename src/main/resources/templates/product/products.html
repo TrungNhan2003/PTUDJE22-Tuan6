@@ -7,8 +7,51 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0">📦 Product List</h4>
-        <a th:href="@{/products/create}" class="btn btn-sm btn-danger fw-semibold px-3">
-            + Create New Product
+        <div>
+            <a th:href="@{/cart}" class="btn btn-sm btn-info fw-semibold px-3 me-2">
+                🛒 View Cart
+            </a>
+            <a th:href="@{/products/create}" class="btn btn-sm btn-danger fw-semibold px-3">
+                + Create New Product
+            </a>
+        </div>
+    </div>
+
+    <form th:action="@{/products}" method="get" class="row g-2 mb-3">
+        <div class="col-md-4">
+            <input type="text"
+                   name="keyword"
+                   class="form-control"
+                   placeholder="Enter product name..."
+                   th:value="${keyword}">
+        </div>
+
+        <div class="col-md-3">
+            <select name="categoryId" class="form-select">
+                <option value="">-- All Categories --</option>
+                <option th:each="c : ${categories}"
+                        th:value="${c.id}"
+                        th:text="${c.name}"
+                        th:selected="${categoryId != null and categoryId == c.id}">
+                </option>
+            </select>
+        </div>
+
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a th:href="@{/products}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
+
+    <div class="mb-3">
+        <a th:href="@{/products(sort='asc', keyword=${keyword}, categoryId=${categoryId})}"
+           class="btn btn-success btn-sm me-2">
+            ↑ Giá tăng
+        </a>
+
+        <a th:href="@{/products(sort='desc', keyword=${keyword}, categoryId=${categoryId})}"
+           class="btn btn-danger btn-sm">
+            ↓ Giá giảm
         </a>
     </div>
 
@@ -25,14 +68,13 @@
             </tr>
             </thead>
             <tbody>
-            <!-- Empty state -->
             <tr th:if="${#lists.isEmpty(listproduct)}">
                 <td colspan="6" class="py-5 text-muted">
                     <div style="font-size:2.5rem;">📭</div>
                     <p class="mt-2 mb-0">No products found.</p>
                 </td>
             </tr>
-            <!-- Product rows -->
+
             <tr th:each="p, stat : ${listproduct}">
                 <td class="text-muted fw-bold" th:text="${stat.index + 1}"></td>
                 <td class="fw-semibold text-start" th:text="${p.name}"></td>
@@ -54,6 +96,10 @@
                     </span>
                 </td>
                 <td>
+                    <a th:href="@{'/cart/add/' + ${p.id}}"
+                       class="btn btn-primary btn-sm fw-semibold me-1">
+                        Add to Cart
+                    </a>
                     <a th:href="@{'/products/edit/' + ${p.id}}"
                        class="btn btn-warning btn-sm fw-semibold me-1">Edit</a>
                     <a th:href="@{'/products/delete/' + ${p.id}}"
@@ -63,6 +109,25 @@
             </tr>
             </tbody>
         </table>
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center mt-3 gap-2">
+        <a th:if="${currentPage > 0}"
+           th:href="@{/products(page=${currentPage - 1}, keyword=${keyword}, sort=${sort}, categoryId=${categoryId})}"
+           class="btn btn-secondary btn-sm">
+            Previous
+        </a>
+
+        <span class="fw-semibold">
+            Page <span th:text="${currentPage + 1}"></span> /
+            <span th:text="${totalPages == 0 ? 1 : totalPages}"></span>
+        </span>
+
+        <a th:if="${currentPage < totalPages - 1}"
+           th:href="@{/products(page=${currentPage + 1}, keyword=${keyword}, sort=${sort}, categoryId=${categoryId})}"
+           class="btn btn-secondary btn-sm">
+            Next
+        </a>
     </div>
 
 </div>

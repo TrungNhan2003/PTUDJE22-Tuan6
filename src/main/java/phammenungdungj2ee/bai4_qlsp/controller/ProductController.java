@@ -1,6 +1,9 @@
 package phammenungdungj2ee.bai4_qlsp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,10 +27,50 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
-    // ===================== LIST =====================
+    // ===================== LIST + SEARCH + PAGINATION + SORT + FILTER CATEGORY =====================
     @GetMapping("")
-    public String index(Model model) {
-        model.addAttribute("listproduct", productService.getAll());
+    public String index(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
+            Model model) {
+
+        int pageSize = 5;
+
+        Sort sortObj = Sort.unsorted();
+        if ("asc".equals(sort)) {
+            sortObj = Sort.by("price").ascending();
+        } else if ("desc".equals(sort)) {
+            sortObj = Sort.by("price").descending();
+        }
+
+        Page<Product> productPage;
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        boolean hasCategory = categoryId != null;
+
+        if (hasKeyword && hasCategory) {
+            productPage = productService.searchByNameAndCategory(
+                    keyword, categoryId, PageRequest.of(page, pageSize, sortObj));
+        } else if (hasKeyword) {
+            productPage = productService.searchByName(
+                    keyword, PageRequest.of(page, pageSize, sortObj));
+        } else if (hasCategory) {
+            productPage = productService.filterByCategory(
+                    categoryId, PageRequest.of(page, pageSize, sortObj));
+        } else {
+            productPage = productService.getAll(
+                    PageRequest.of(page, pageSize, sortObj));
+        }
+
+        model.addAttribute("listproduct", productPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sort", sort);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("categories", categoryService.getAll());
+
         return "product/products";
     }
 
@@ -52,12 +95,10 @@ public class ProductController {
             return "product/create";
         }
 
-        // xử lý ảnh
         if (imageProduct != null && !imageProduct.isEmpty()) {
             productService.updateImage(newProduct, imageProduct);
         }
 
-        // set category
         Category selectedCategory = categoryService.get(categoryId);
         newProduct.setCategory(selectedCategory);
 
@@ -69,7 +110,6 @@ public class ProductController {
     // ===================== EDIT =====================
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
-
         Product product = productService.get(id);
 
         if (product == null) {
@@ -95,7 +135,6 @@ public class ProductController {
             return "product/edit";
         }
 
-        // update ảnh nếu có
         if (imageProduct != null && !imageProduct.isEmpty()) {
             productService.updateImage(editProduct, imageProduct);
         }
@@ -105,6 +144,13 @@ public class ProductController {
 
         productService.update(editProduct);
 
+        return "redirect:/products";
+    }
+
+    // ===================== DELETE =====================
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id) {
+        productService.delete(id);
         return "redirect:/products";
     }
 }
